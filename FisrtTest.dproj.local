@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.541,C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\First.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.731,=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.242,C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\FisrtTest.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.541,C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\First.pas</Transaction>
+    <Transaction>2020.06.03 18:00:11.415,C:\Users\sonicx\Documents\Projects\Delphi\Bolid\First\FisrtTest.dproj=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\FisrtTest.dproj</Transaction>
+    <Transaction>2020.06.03 18:00:43.911,C:\Users\sonicx\Documents\Projects\Delphi\Bolid\First\First.dfm=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\First.dfm</Transaction>
+    <Transaction>2020.06.03 18:00:43.911,C:\Users\sonicx\Documents\Projects\Delphi\Bolid\First\First.pas=C:\Users\sonicx\Documents\Embarcadero\Studio\Projects\First.pas</Transaction>
+  </Transactions>
+</BorlandProject>
