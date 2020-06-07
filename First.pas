@@ -151,9 +151,21 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
   case Form1.RadioGroup1.ItemIndex of
     0:
-      Child1.SavePublishedProps();
+      begin
+        try
+          Child1.SavePublishedProps();
+        except
+          on E: Exception do MessageDlg(E.Message + ' ' + IntToStr(E.HelpContext) ,mtError, mbOKCancel, 0);
+        end;
+      end;
     1:
-      Child2.SavePublishedProps();
+      begin
+        try
+          Child2.SavePublishedProps();
+        except
+          on E: Exception do MessageDlg(E.Message + ' ' + IntToStr(E.HelpContext) ,mtError, mbOKCancel, 0);
+        end;
+      end;
   end;
 end;
 
