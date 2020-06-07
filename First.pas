@@ -25,18 +25,40 @@ type
   end;
 
 
+   // Класс от коротого наследуемся, родитель
+   {
+    Наследуемся от этого класса, все объекты от него имеют 2 основных метода:
+    procedure RestorePublishedProps(name: string
+    function GetPublishedPropsToStrings(): TStrings;
+    Т.е. каждый объект наследуемый от данного класса будет иметь возможность
+    сохранять и восстанавливать свои published параметры.
+    Сохранение было сделано в INI Файлы.
+    Тут необходимо заметить, что можно было сделать некую "Обертку" на
+    сохранение, чтобы в дальнейшем было легко заменить на храние в другом месте,
+    в БД или реестре.
+   }
    TParent = class(TObject)
-    // Класс от коротого наследуемся, родитель
     var
+      //Словарь для хранения названия параметров и их значений
       PropsDict: TDictionary <string, TValue>;
     public
-      procedure SavePublishedProps();
+      procedure SavePublishedProps(); //Сохраняет в INI файлы публичные параметры
+      //Восстанавливает параметры из INI файла, название передается в name
       procedure RestorePublishedProps(name: string);
+      //Для работы с TMemo, для наглядности
       function GetPublishedPropsToStrings(): TStrings;
     private
+      //Устанавливает значение параметра у по имени и значению НЕ ИСПОЛЬЗУЕТСЯ
+      //Планироваловась для взаимодействия с объектами формы
       procedure SetPublishedPropByName(name: string; value: TValue); virtual;
+      //Процедура заргужает в Словарь определенный выше (PropsDict) все
+      //паблишед параметры
       procedure GetAllPublishedProps(); virtual;
+      //Проверка параметра по имени на сущетвование, НЕ ИСПОЛЬЗУЕТСЯ
+      //Планироваловась для взаимодействия с объектами формы
       function IsPropExist(name: string): boolean; virtual;
+      //Выдает значение параметра по имени, НЕ ИСПОЛЬЗУЕТСЯ
+      //Планироваловась для взаимодействия с объектами формы
       function GetPublishedPropByName(name: string): TValue; virtual;
       constructor Create();
       destructor Destroy();
@@ -52,7 +74,6 @@ type
       I64: Int64;
       Fl: Double;
       Str : String;
-      function Test():string;
       constructor Create();
       destructor Destroy();
     published
@@ -126,60 +147,14 @@ begin
   inherited;
 end;
 
-function TChild1.Test: string;
-var
-  Ch1: TChild1;
-  Ch2: TChild2;
-  FRtti: TRttiContext;
-  FTyp: TRttiType;
-  FProp: TRttiProperty;
-  Value: TValue;
-begin
-ShowMessage('1');
-  self.GetAllPublishedProps();
-  {Value := self.GetPublishedPropByName('FPubNumber');
-  ShowMessage('Exit');
-  ShowMessage(IntToStr(Value.AsInteger));
-  self.SetPublishedPropByName('FPubNumber', 22);
-  //ShowMessage(FProp.Name);
-  Value := self.GetPublishedPropByName('FPubNumber');
-  ShowMessage('--------------');
-  ShowMessage(IntToStr(self.FPubNumber));
-  Result := 'Привет' }
-end;
-
 procedure TForm1.Button1Click(Sender: TObject);
-var
-  Ch1: TChild1;
-  Ch2: TChild2;
-  Ctx: TRttiContext;
-  Typ: TRttiType;
-  Prop: TRttiProperty;
-  Val: TValue;
-  var i:integer;
 begin
-    Ch1 := TChild1.Create();
-    Ch2 := TChild2.Create();
-    Ch1.SavePublishedProps();
-    ShowMessage(Val.ToString);
-    Val := Ch1.GetPublishedPropByName('niaaome');
-    ShowMessage(Val.ToString);
-    if not Val.IsEmpty then
-    begin
-      ShowMessage(Val.ToString);
-    end
-    else
-    begin
-      ShowMessage('nil');
-    end;
-    if Ch1.IsPropExist('Sex') then
-    begin
-      ShowMessage('FSome');
-    end ;
-    //Ch1.RestorePublishedProps(ChangeFileExt(Application.ExeName, '.INI'));
-    //Ch1.SavePublishedProps();
-    Ch1.GetPublishedPropsToStrings();
-        //Ch1.Test();
+  case Form1.RadioGroup1.ItemIndex of
+    0:
+      Child1.SavePublishedProps();
+    1:
+      Child2.SavePublishedProps();
+  end;
 end;
 
 { TParent }
@@ -190,10 +165,7 @@ var
   Pair: TPair<string, TValue>;
 begin
   Self.GetAllPublishedProps();
-  ShowMessage(self.ClassName);
   SettingsFile := TMemIniFile.Create(ChangeFileExt(Application.ExeName, '.INI'), TEncoding.UTF8);
-  ShowMessage(SettingsFile.FileName);
-  ShowMessage(SettingsFile.ToString);
   SettingsFile.EraseSection(self.ClassName);
   try
     for Pair in PropsDict do
@@ -293,38 +265,32 @@ var
   FProp: TRttiProperty;
   Value: TValue;
   PropsLines: TStrings;
-  Line: string;
+  L: string;
 begin
-  ShowMessage('____GetPublishedPropsToStrings');
   FRtti := TRttiContext.Create;
   FTyp := FRtti.GetType(self.ClassType);
-  PropsLines := TStrings.Create;
+  PropsLines := TStringList.Create;
   for FProp in FTyp.GetProperties do
   begin
     Value := FProp.GetValue(self);
     case Value.Kind of
-      tkInteger:
-        Line := FProp.Name + ': ' + IntToStr(Value.AsInt64);
-      tkInt64:
+      tkInteger, tkInt64:
       begin
-        Line := FProp.Name + ': ' + IntToStr(Value.AsInt64);
-        ShowMessage(Line);
+        L := FProp.Name + ': ' + IntToStr(Value.AsInt64);
       end;
       tkstring, tkUString, tkLString, tkWString, tkChar, tkWChar:
       begin
-        Line := FProp.Name + ': ' + Value.AsString;
-        ShowMessage(Line);
+        L := FProp.Name + ': ' + Value.AsString;
       end;
       tkFloat:
       begin
-        Line := FProp.Name + ': ' + FloatToStr(Value.AsExtended);
-        ShowMessage(Line);
+        L := FProp.Name + ': ' + FloatToStr(Value.AsExtended);
       end;
     end;
-    PropsLines.Add(Line);
+    PropsLines.Add(L);
   end;
   Result := PropsLines;
-FRtti.Free;
+  FRtti.Free;
 end;
 
 function TParent.IsPropExist(name: string): boolean;
@@ -422,12 +388,19 @@ begin
   if OpenDlg.Execute then begin
     case Form1.RadioGroup1.ItemIndex of
     0:
-      ShowMessage(Child1.ToString);
+      begin
+        Child1.RestorePublishedProps(OpenDlg.FileName);
+        Form1.Memo1.Clear;
+        Form1.Memo1.Lines := Child1.GetPublishedPropsToStrings();
+      end;
     1:
-      ShowMessage(Child2.ToString);
+      begin
+        Child2.RestorePublishedProps(OpenDlg.FileName);
+        Form1.Memo1.Clear;
+        Form1.Memo1.Lines := Child2.GetPublishedPropsToStrings();
+      end;
     end;
   end;
-
   OpenDlg.Free;
 
 end;
@@ -439,9 +412,9 @@ begin
 
   case Form1.RadioGroup1.ItemIndex of
     0:
-      Memo1.Lines.Add(Child1.ToString);
+      Form1.Memo1.Lines := Child1.GetPublishedPropsToStrings();
     1:
-      Memo1.Lines.Add(Child2.ToString);
+      Form1.Memo1.Lines := Child2.GetPublishedPropsToStrings();
   end;
 end;
 
@@ -451,9 +424,9 @@ begin
   Memo1.Clear;
   case Form1.RadioGroup1.ItemIndex of
   0:
-    Memo1.Lines.Add(Child1.ToString);
+    Form1.Memo1.Lines := Child1.GetPublishedPropsToStrings();
   1:
-    Memo1.Lines.Add(Child2.ToString);
+    Form1.Memo1.Lines := Child2.GetPublishedPropsToStrings();
   end;
 end;
 
